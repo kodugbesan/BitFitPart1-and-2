@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">BitFit Part 1</string>
+    <string name="hint_calories">Calories</string>
+    <string name="hint_date">Date (YYYY-MM-DD)</string>
+    <string name="hint_food">Food</string>
+    <string name="button_save">Save Entry</string>
+    <string name="photo_preview">Photo Preview</string> <!-- Added -->
+    <string name="add_photo">Add Photo</string> <!-- Added -->
+</resources>
