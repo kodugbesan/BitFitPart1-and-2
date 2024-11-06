@@ -6,18 +6,17 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
-class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "calories.db"
-        private const val DATABASE_VERSION = 2 // Incremented version
+        private const val DATABASE_VERSION = 2
         private const val TABLE_NAME = "calorieentry"
         private const val COLUMN_ID = "id"
         private const val COLUMN_CALORIES = "calories"
         private const val COLUMN_DATE = "date"
         private const val COLUMN_FOOD = "food"
-        private const val COLUMN_PHOTO_PATH = "photo_path" // New column for photo path
+        private const val COLUMN_PHOTO_PATH = "photo_path"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -26,7 +25,7 @@ class DatabaseHelper(context: Context) :
                 + "$COLUMN_CALORIES INTEGER, "
                 + "$COLUMN_DATE TEXT, "
                 + "$COLUMN_FOOD TEXT, "
-                + "$COLUMN_PHOTO_PATH TEXT)") // Include photo path in the table
+                + "$COLUMN_PHOTO_PATH TEXT)")
         db.execSQL(createTable)
     }
 
@@ -35,15 +34,16 @@ class DatabaseHelper(context: Context) :
         onCreate(db)
     }
 
-    // Updated method to include photo path
     fun insertCalorieEntry(calories: Int, date: String, food: String, photoPath: String?) {
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(COLUMN_CALORIES, calories)
         contentValues.put(COLUMN_DATE, date)
         contentValues.put(COLUMN_FOOD, food)
-        contentValues.put(COLUMN_PHOTO_PATH, photoPath) // Store the photo path
+        contentValues.put(COLUMN_PHOTO_PATH, photoPath)
+
         db.insert(TABLE_NAME, null, contentValues)
+        db.close()  // Close the database after use
     }
 
     fun getAllEntries(): List<CalorieEntry> {
@@ -53,27 +53,46 @@ class DatabaseHelper(context: Context) :
 
         if (cursor.moveToFirst()) {
             do {
-                val idIndex = cursor.getColumnIndex(COLUMN_ID)
-                val caloriesIndex = cursor.getColumnIndex(COLUMN_CALORIES)
-                val dateIndex = cursor.getColumnIndex(COLUMN_DATE)
-                val foodIndex = cursor.getColumnIndex(COLUMN_FOOD)
-                val photoPathIndex = cursor.getColumnIndex(COLUMN_PHOTO_PATH) // New index for photo path
+                val id = cursor.getLong(cursor.getColumnIndex(COLUMN_ID))
+                val calories = cursor.getInt(cursor.getColumnIndex(COLUMN_CALORIES))
+                val date = cursor.getString(cursor.getColumnIndex(COLUMN_DATE))
+                val food = cursor.getString(cursor.getColumnIndex(COLUMN_FOOD))
+                val photoPath = cursor.getString(cursor.getColumnIndex(COLUMN_PHOTO_PATH))
 
-                // Ensure column indices are valid before accessing values
-                if (idIndex >= 0 && caloriesIndex >= 0 && dateIndex >= 0 && foodIndex >= 0 && photoPathIndex >= 0) {
-                    val id = cursor.getLong(idIndex)
-                    val calories = cursor.getInt(caloriesIndex)
-                    val date = cursor.getString(dateIndex)
-                    val food = cursor.getString(foodIndex)
-                    val photoPath = cursor.getString(photoPathIndex) // Get the photo path
-
-                    entries.add(CalorieEntry(id, calories, date, food, photoPath)) // Include photo path in the entry
-                }
+                entries.add(CalorieEntry(id, calories, date, food, null, photoPath))
             } while (cursor.moveToNext())
         }
 
         cursor.close()
+        db.close()  // Close the database after use
         return entries
     }
+
+    fun getTotalCalories(): Int {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT SUM($COLUMN_CALORIES) FROM $TABLE_NAME", null)
+        var total = 0
+        if (cursor.moveToFirst()) {
+            total = cursor.getInt(0)  // Get the sum of calories, 0 if null
+        }
+        cursor.close()
+        db.close()  // Close the database after use
+        return total
+    }
+
+    fun getTotalEntries(): Int {
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)  // Get the count, 0 if no entries
+        }
+        cursor.close()
+        db.close()  // Close the database after use
+        return count
+    }
 }
+
+
+
 

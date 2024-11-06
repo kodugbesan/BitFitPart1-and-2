@@ -4,6 +4,17 @@
     <string name="hint_date">Date (YYYY-MM-DD)</string>
     <string name="hint_food">Food</string>
     <string name="button_save">Save Entry</string>
-    <string name="photo_preview">Photo Preview</string> <!-- Added -->
-    <string name="add_photo">Add Photo</string> <!-- Added -->
+    <string name="photo_preview">Photo Preview</string>
+    <string name="add_photo">Add Photo</string>
+
+    <!-- These are the strings being used in the dashboard layout -->
+    <string name="total_calories">Total Calories</string>
+    <string name="total_entries">Total Entries</string>
+    <string name="add_entry">Add Entry</string>
+    <string name="food_image">Food Image</string>
+    <string name="calories">Calories</string>
+    <string name="date">Date</string>
+    <string name="food">Food</string>
+    <string name="zero_value">0</string> <!-- Used for zero-value placeholders -->
 </resources>
+

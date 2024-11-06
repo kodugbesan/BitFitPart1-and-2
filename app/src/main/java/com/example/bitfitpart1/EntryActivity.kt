@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class EntryActivity : AppCompatActivity() {
@@ -20,7 +21,7 @@ class EntryActivity : AppCompatActivity() {
     private lateinit var imageView: ImageView
     private lateinit var databaseHelper: DatabaseHelper
 
-    private var photoUri: Uri? = null // To store the photo URI
+    private var photoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +46,6 @@ class EntryActivity : AppCompatActivity() {
     }
 
     private fun selectPhoto() {
-        // Launch the image picker
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, REQUEST_CODE_PHOTO)
     }
@@ -55,8 +55,8 @@ class EntryActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_PHOTO && resultCode == RESULT_OK) {
             data?.data?.let { uri ->
                 photoUri = uri
-                imageView.setImageURI(photoUri) // Display the selected photo
-                imageView.visibility = ImageView.VISIBLE // Make the image view visible
+                imageView.setImageURI(photoUri)
+                imageView.visibility = ImageView.VISIBLE
             }
         }
     }
@@ -65,19 +65,25 @@ class EntryActivity : AppCompatActivity() {
         val calories = editCalories.text.toString().toIntOrNull() ?: return
         val date = editDate.text.toString()
         val food = editFood.text.toString()
-        val photoPath = photoUri?.toString() // Get the photo URI as a string
 
-        // Log the photo path for debugging
+        if (date.isEmpty() || food.isEmpty()) {
+            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val photoPath = photoUri?.toString()
+
         Log.d("EntryActivity", "Saving Entry: Calories: $calories, Date: $date, Food: $food, Photo Path: $photoPath")
 
-        databaseHelper.insertCalorieEntry(calories, date, food, photoPath) // Pass the photo path to the database
+        // Insert the entry into the database with the updated method signature
+        databaseHelper.insertCalorieEntry(calories, date, food, photoPath)
 
-        // Optionally, finish the activity after saving
+        Toast.makeText(this, "Entry saved successfully!", Toast.LENGTH_SHORT).show()
         finish()
     }
 
     companion object {
-        private const val REQUEST_CODE_PHOTO = 1001 // Request code for photo selection
+        private const val REQUEST_CODE_PHOTO = 1001
     }
 }
 
