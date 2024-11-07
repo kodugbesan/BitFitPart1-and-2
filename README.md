@@ -2,7 +2,7 @@
 
 Submitted by: Kasope Odugbesan 
 
-BitfitPart2  is a health metrics app that allows users to track ... [TODO] 
+BitFitPart2 is a health metrics app that allows users to easily track daily health data like calories and activity. It features a sleek, modern design and includes notifications to remind users to log their data, along with a confirmation pop-up to notify when an entry has been added successfully.
 
 Time spent: 168 hours spent in total
 
